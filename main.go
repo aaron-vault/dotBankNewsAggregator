@@ -161,9 +161,9 @@ func HandleSitemap(w http.ResponseWriter, r *http.Request){
 	if site == "https://news.rambler.ru"{
 		infoSite["header"] = ".big-title__title"
 		infoSite["description"] = ".gallery__annotation"
-	}else if site == "https://news.rambler.ru"{
-		infoSite["header"] = ".big-title__title"
-		infoSite["description"] = ".gallery__annotation"
+	}else if site == "https://rb.ru"{
+		infoSite["header"] = ".article__title"
+		infoSite["description"] = ".post-announce p"
 	}
 
 	setNews := getSetNews(smp, infoSite)
