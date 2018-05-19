@@ -30,4 +30,4 @@ type TempSitemap struct {
 
 type TempSitemapUrls struct {
 	SitemapUrls []string `xml:"url>loc"`
-} 
+}
