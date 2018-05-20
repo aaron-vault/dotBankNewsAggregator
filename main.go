@@ -9,6 +9,7 @@ import (
 	"html/template"
 	"dotBankNewsAggregator/goquery"
 	"dotBankNewsAggregator/dot_temp"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Handler interface {
