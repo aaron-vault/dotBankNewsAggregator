@@ -10,7 +10,8 @@ import (
 	"dotBankNewsAggregator/goquery"
 	"dotBankNewsAggregator/dot_temp"
 	_ "github.com/go-sql-driver/mysql"
-	_ "dotBankNewsAggregator/dot_db"
+	"database/sql"
+	"dotBankNewsAggregator/dot_db"
 )
 
 type Handler interface {
@@ -127,6 +128,19 @@ func getSetNews(anySite dot_temp.TempSitemap, infoSite map[string]string) dot_te
 	infoHeader := infoSite["header"]
 	infoDescription := infoSite["description"]
 
+	//Подключение к базе MySQL
+	con := "root@/dot_news?"
+	con += "&charset=utf8"
+	con += "&interpolateParams=true"
+
+	db, err := sql.Open("mysql", con)
+	db.SetMaxIdleConns(10)
+
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
 	for index, value := range anySite.Sitemap {
 		fmt.Println(index, value)
 		for index, value := range getArrayUrls(value).SitemapUrls {
@@ -134,15 +148,19 @@ func getSetNews(anySite dot_temp.TempSitemap, infoSite map[string]string) dot_te
 			fmt.Println(index, value)
 			fmt.Println("Header: " + post.Header)
 			fmt.Println("Description: " + post.Description)
-			one_news := dot_temp.TempNews{ //RamblerNews
+			one_news := dot_temp.TempNews{
+				Site: infoSite["site"],
 				Link: value,
 				Header: post.Header,
 				Description: post.Description,
 			}
+			dot_db.Insert(dot_db.NewItem{ db, one_news })
 			setNews.SetNews = append(setNews.SetNews, one_news)
 		}
 		break
 	}
+
+	defer db.Close()
 	return setNews
 }
 
@@ -159,6 +177,8 @@ func HandleSitemap(w http.ResponseWriter, r *http.Request){
 	xml.Unmarshal(bytes, &smp)
 
 	infoSite := make(map[string]string)
+
+	infoSite["site"] = site
 
 	if site == "https://news.rambler.ru"{
 		infoSite["header"] = ".big-title__title"
