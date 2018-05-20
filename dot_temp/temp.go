@@ -1,12 +1,9 @@
 package dot_temp
 
-import "database/sql"
-
 /*
  * Шаблон новости
  */
 type TempNews struct {
-	DB *sql.DB
 	Site string
 	Link string
 	Header string
