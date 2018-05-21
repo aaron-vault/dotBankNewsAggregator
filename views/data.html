@@ -10,10 +10,19 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
     <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+    <style>
+        #fromMysql{
+            margin-top: 50px !important;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <table class="table">
+    <dib class="form-group">
+        <label for="">Поиск</label>
+        <input type="text" name="search" id="search" class="form-control float-right" placeholder="найти что-нибудь по заголовку..">
+    </dib>
+    <table class="table" id="fromMysql">
         <thead class="thead-dark">
         <tr>
             <th scope="col">Сайт</th>
@@ -36,3 +45,17 @@
 </div>
 </body>
 </html>
+<script>
+    (function($, undefined){
+        $("#search").keyup(function(){
+            _this = this;
+
+            $.each($("#fromMysql tbody tr"), function() {
+                if($(this).text().toLowerCase().indexOf($(_this).val().toLowerCase()) === -1) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }});
+        });
+    })(jQuery);
+</script>
