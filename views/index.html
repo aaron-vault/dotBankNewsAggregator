@@ -8,6 +8,14 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+    <style>
+        .row{
+            margin-top: 10px;
+        }
+        .bg-dark {
+            background-color: transparent!important;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -15,10 +23,19 @@
         <form method="post" action="result">
             <div class="row">
                 <div class="col">
-                    <input type="text" name="site1" class="form-control" placeholder="Сайт #1">
+                    <input type="text" name="site1" class="form-control" placeholder="Url сайта..">
                 </div>
                 <div class="col">
-                    <button type="submit" class="btn btn-default">Парсить</button>
+                    <input type="text" name="post-header" class="form-control" placeholder="#id или .class заголовка">
+                </div>
+                <div class="col">
+                    <input type="text" name="post-description" class="form-control" placeholder="#id или .class описания">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button type="submit" id="parsing" class="btn btn-default">Парсить</button>
+                    <button type="button" id="getRows" class="btn btn-primary">Вывести данные</button>
                 </div>
             </div>
         </form>
