@@ -6,12 +6,12 @@ import (
 	"regexp"
 	"fmt"
 	"encoding/xml"
-	"html/template"
 	"dotBankNewsAggregator/goquery"
 	"dotBankNewsAggregator/dot_temp"
 	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
 	"dotBankNewsAggregator/dot_db"
+	"html/template"
 )
 
 type Handler interface {
@@ -141,6 +141,7 @@ func getSetNews(anySite dot_temp.TempSitemap, infoSite map[string]string) dot_te
 		panic(err)
 	}
 
+	//Обработка карты сайта, получение данных и добавление в БД
 	for index, value := range anySite.Sitemap {
 		fmt.Println(index, value)
 		for index, value := range getArrayUrls(value).SitemapUrls {
@@ -169,6 +170,8 @@ func getSetNews(anySite dot_temp.TempSitemap, infoSite map[string]string) dot_te
  */
 func HandleSitemap(w http.ResponseWriter, r *http.Request){
 	site := r.FormValue("site1")
+	header := r.FormValue("post-header")
+	description := r.FormValue("post-description")
 	sitemap := getSitemap(site)
 
 	var smp dot_temp.TempSitemap
@@ -181,12 +184,23 @@ func HandleSitemap(w http.ResponseWriter, r *http.Request){
 	infoSite["site"] = site
 
 	if site == "https://news.rambler.ru"{
-		infoSite["header"] = ".big-title__title"
-		infoSite["description"] = ".gallery__annotation"
+		infoSite["header"] = header
+		infoSite["description"] = description
 	}else if site == "https://rb.ru"{
-		infoSite["header"] = ".article__title"
-		infoSite["description"] = ".post-announce p"
+		infoSite["header"] = header
+		infoSite["description"] = description
 	}
+
+	/*
+
+		Rambler
+		h: .big-title__title
+		d: .gallery__annotation
+
+		rb
+		h: .article__title
+		d: .post-announce p
+	 */
 
 	setNews := getSetNews(smp, infoSite)
 
@@ -196,12 +210,38 @@ func HandleSitemap(w http.ResponseWriter, r *http.Request){
 	resp.Body.Close()
 }
 
+/*
+ * Выгрузка данных из MySQL
+ */
+func HandleData(w http.ResponseWriter, r *http.Request)  {
+	site := r.FormValue("site1")
+	fmt.Println(site)
+	//Подключение к базе MySQL
+	con := "root@/dot_news?"
+	con += "&charset=utf8"
+	con += "&interpolateParams=true"
+
+	db, err := sql.Open("mysql", con)
+	db.SetMaxIdleConns(10)
+
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	rows := dot_db.Select("news", *db)
+	tmpl, _ := template.ParseFiles("views/data.html")
+	tmpl.Execute(w, rows)
+}
+
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "views/index.html")
 	})
 
 	http.HandleFunc("/result", HandleSitemap)
+
+	http.HandleFunc("/data", HandleData)
 
 	fmt.Println("Сервер запущен..")
 	http.ListenAndServe(":8585", nil)
