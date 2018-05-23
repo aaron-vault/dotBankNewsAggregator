@@ -10,4 +10,3 @@ description: .gallery__annotation
 header: .article__title
 description: .post-announce p
 
-Чтобы избежать дублирования данных в базе, можно в insert добавить ignore и расставить необходимые индексы в самой таблице.
